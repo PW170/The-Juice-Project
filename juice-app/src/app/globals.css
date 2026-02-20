@@ -1,0 +1,581 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&family=Permanent+Marker&display=swap');
+
+:root {
+    --bg-color: #080808;
+    --text-color: #ffffff;
+    --red-accent: #cc0000;
+    --yellow-accent: #f2e300;
+    --dark-accent: #111111;
+
+    --font-display: 'Bebas Neue', 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-marker: 'Permanent Marker', cursive;
+
+    --building-width: 600px;
+    --building-depth: 350px;
+    --building-height: 5000px;
+    /* INCREASED MASSIVELY TO SPREAD CONTENT */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    color: var(--text-color);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    cursor: none;
+}
+
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-color);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+body:hover .custom-cursor {
+    opacity: 1;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 1.5rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    mix-blend-mode: difference;
+    pointer-events: none;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    font-family: var(--font-display);
+    color: var(--yellow-accent);
+    letter-spacing: 2px;
+    pointer-events: auto;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    pointer-events: auto;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--red-accent);
+}
+
+.street-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.line {
+    position: absolute;
+    background: #333;
+    box-shadow: 0 0 0 4px #222, 0 0 0 8px #333;
+}
+
+.line-1 {
+    bottom: -20vh;
+    left: -20vw;
+    width: 15px;
+    height: 120vh;
+    transform: rotate(35deg);
+}
+
+.line-2 {
+    bottom: -20vh;
+    right: -10vw;
+    width: 25px;
+    height: 120vh;
+    transform: rotate(-30deg);
+}
+
+.line-2::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 100%;
+    background: repeating-linear-gradient(to bottom,
+            var(--yellow-accent) 0,
+            var(--yellow-accent) 20px,
+            transparent 20px,
+            transparent 40px);
+}
+
+/* INCREASED SCROLL LENGTH TO MATCH TALLER BUILDING */
+.scroll-container {
+    height: 800vh;
+}
+
+.viewport-3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    perspective: 1200px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.world {
+    width: var(--building-width);
+    height: var(--building-height);
+    position: relative;
+    transform-style: preserve-3d;
+    transform: translateZ(-1000px) rotateX(75deg) translateY(400px);
+}
+
+/* ===== FLOATING ROOF TITLE ===== */
+.floating-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    pointer-events: none;
+}
+
+/* SMALLER, GLASSMORPHIC TEXT EFFECT */
+.floating-overlay h1 {
+    font-family: var(--font-display);
+    font-size: 8rem;
+    /* Made smaller */
+    line-height: 0.9;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    letter-spacing: 2px;
+
+    /* Glassmorphism treatment */
+    background: rgba(255, 255, 255, 0.05);
+    /* Very transparent white */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 3rem 5rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* Slight glassy gradient */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.floating-overlay h1 span {
+    display: block;
+}
+
+/* Style the lyric under the glass */
+.floating-overlay .poster-subtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--yellow-accent);
+    letter-spacing: 2px;
+    margin-top: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.enter-btn {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+}
+
+.enter-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-5px);
+    color: var(--yellow-accent);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== BUILDING STRUCTURE ===== */
+.building {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.roof {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--building-width);
+    height: var(--building-depth);
+    background: var(--red-accent);
+    transform-origin: top;
+    transform: rotateX(-90deg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 3px solid #ff4d4d;
+    /* Roof edge/cornice effect */
+    box-shadow:
+        inset 0 0 30px rgba(0, 0, 0, 0.3),
+        0 5px 0 #aa0000,
+        0 10px 0 #880000;
+}
+
+.tiny-juice {
+    width: 80px;
+    height: 50px;
+    background-image: url('/images/juice-smoke.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px;
+    border: 2px solid #111;
+    transform: translateZ(2px) rotate(10deg);
+    box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.8);
+}
+
+.facade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--building-width);
+    height: var(--building-height);
+    background: #990000;
+    display: flex;
+    flex-direction: column;
+    padding: 0 1.5rem;
+    box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(100, 0, 0, 0.5);
+    pointer-events: auto;
+    border-top: 3px solid #ff4d4d;
+    transition: background-color 2s ease;
+    border-left: 2px solid #550000;
+    border-right: 2px solid #550000;
+}
+
+/* Horizontal floor ledges on facade */
+.facade::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(to bottom,
+            transparent 0,
+            transparent 190px,
+            rgba(255, 255, 255, 0.03) 190px,
+            rgba(255, 255, 255, 0.03) 194px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.wall-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--building-depth);
+    height: var(--building-height);
+    background: #990000;
+    transform-origin: left;
+    transform: rotateY(90deg);
+    /* Glowing yellow apartment windows */
+    background-image:
+        repeating-linear-gradient(to bottom,
+            transparent 0,
+            transparent 20px,
+            #990000 20px,
+            #990000 40px),
+        repeating-linear-gradient(to right,
+            transparent 0,
+            transparent 30px,
+            #990000 30px,
+            #990000 50px);
+    background-size: 100% 100%;
+    overflow: hidden;
+}
+
+.wall-left::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(to bottom,
+            rgba(242, 227, 0, 0.7) 0,
+            rgba(242, 227, 0, 0.5) 50px,
+            transparent 50px,
+            transparent 60px,
+            #770000 60px,
+            #770000 70px,
+            transparent 70px,
+            transparent 120px);
+    mask-image: repeating-linear-gradient(to right,
+            black 0,
+            black 40px,
+            transparent 40px,
+            transparent 55px);
+    -webkit-mask-image: repeating-linear-gradient(to right,
+            black 0,
+            black 40px,
+            transparent 40px,
+            transparent 55px);
+}
+
+/* Floor ledges on left wall */
+.wall-left::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(to bottom,
+            transparent 0,
+            transparent 115px,
+            rgba(0, 0, 0, 0.4) 115px,
+            rgba(0, 0, 0, 0.4) 120px);
+    pointer-events: none;
+}
+
+.wall-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--building-depth);
+    height: var(--building-height);
+    background: #770000;
+    transform-origin: right;
+    transform: rotateY(-90deg);
+    overflow: hidden;
+}
+
+.wall-right::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    background:
+        repeating-linear-gradient(to bottom,
+            rgba(242, 227, 0, 0.5) 0,
+            rgba(242, 227, 0, 0.35) 50px,
+            transparent 50px,
+            transparent 60px,
+            #550000 60px,
+            #550000 70px,
+            transparent 70px,
+            transparent 120px);
+    mask-image: repeating-linear-gradient(to right,
+            black 0,
+            black 40px,
+            transparent 40px,
+            transparent 55px);
+    -webkit-mask-image: repeating-linear-gradient(to right,
+            black 0,
+            black 40px,
+            transparent 40px,
+            transparent 55px);
+}
+
+.wall-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(to bottom,
+            transparent 0,
+            transparent 115px,
+            rgba(0, 0, 0, 0.4) 115px,
+            rgba(0, 0, 0, 0.4) 120px);
+    pointer-events: none;
+}
+
+/* ===== FACADE CONTENT (The Windows/Cards) ===== */
+.facade-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* Stack them closely */
+    gap: 1.5rem;
+    padding-bottom: 30rem;
+}
+
+.window {
+    background: var(--yellow-accent);
+    aspect-ratio: 2/3;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2), 0 15px 25px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.window:nth-child(even) {
+    transform: rotate(2deg) scale(0.95);
+}
+
+.window:nth-child(odd) {
+    transform: rotate(-1.5deg) scale(0.98);
+}
+
+.window:nth-child(3n) {
+    transform: rotate(1deg) scale(0.92);
+}
+
+.window.black-card {
+    background: var(--dark-accent);
+    color: var(--text-color);
+    border: 2px solid #222;
+}
+
+.window.content-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transform: none;
+}
+
+.window-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--red-accent);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.window-text {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.window-marker {
+    font-family: var(--font-marker);
+    font-size: 1.2rem;
+    color: #111;
+    transform: rotate(-5deg);
+}
+
+.window-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(100%) contrast(1.2);
+    transition: filter 0.3s;
+}
+
+.window:hover .window-image {
+    filter: grayscale(0%) contrast(1.1);
+}
+
+.span-2 {
+    grid-column: span 2;
+    aspect-ratio: 4/2;
+}
+
+.span-3 {
+    grid-column: span 3;
+    aspect-ratio: 6/2;
+}
+
+.waveform {
+    width: 60%;
+    height: 40px;
+    background: repeating-linear-gradient(90deg,
+            #111,
+            #111 2px,
+            transparent 2px,
+            transparent 6px);
+    opacity: 0.5;
+}
+
+@media (max-width: 1024px) {
+    .floating-overlay h1 {
+        font-size: 6rem;
+        padding: 2rem 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --building-width: 80vw;
+    }
+
+    .floating-overlay h1 {
+        font-size: 4.5rem;
+        padding: 2rem;
+    }
+
+    .viewport-3d {
+        perspective: 800px;
+    }
+
+    .facade-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20rem 0.8rem;
+    }
+}

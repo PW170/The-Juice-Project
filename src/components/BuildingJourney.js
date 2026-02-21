@@ -4,14 +4,15 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
+import Link from 'next/link';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const albums = [
-    { className: 'art-gbgr', abbr: 'GB&GR', title: 'Goodbye & Good Riddance', year: '2018' },
-    { className: 'art-drfl', abbr: 'DRFL', title: 'Death Race for Love', year: '2019' },
-    { className: 'art-lnd', abbr: 'LND', title: 'Legends Never Die', year: '2020' },
-    { className: 'art-fd', abbr: 'FD', title: 'Fighting Demons', year: '2021' },
+export const albums = [
+    { id: 'gbgr', className: 'art-gbgr', image: '/images/gbgr.jpg', abbr: 'GB&GR', title: 'Goodbye & Good Riddance', year: '2018' },
+    { id: 'drfl', className: 'art-drfl', image: '/images/drfl.jpg', abbr: 'DRFL', title: 'Death Race for Love', year: '2019' },
+    { id: 'lnd', className: 'art-lnd', image: '/images/lnd.jpg', abbr: 'LND', title: 'Legends Never Die', year: '2020' },
+    { id: 'fd', className: 'art-fd', image: '/images/fd.jpg', abbr: 'FD', title: 'Fighting Demons', year: '2021' },
 ];
 
 export default function BuildingJourney() {
@@ -52,7 +53,7 @@ export default function BuildingJourney() {
 
             // Phase 3: Plunge down the endless facade
             tl.to(buildingRef.current, {
-                y: -4000,
+                y: typeof window !== 'undefined' && window.innerWidth < 768 ? -7500 : -4000,
                 duration: 8,
                 ease: 'none'
             }, 2.0);
@@ -217,42 +218,29 @@ export default function BuildingJourney() {
                                 }}>— Juice WRLD</p>
                             </div>
 
-                            {/* ALBUMS SHOWCASE MOVED BELOW WINDOWS */}
-                            <div className="albums-showcase" style={{ margin: '4rem auto', padding: '0 1rem', display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', maxWidth: '80%' }}>
-                                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                                    <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '4rem', color: '#111', letterSpacing: '2px' }}>THE LEGACY</h2>
+                            {/* ALBUMS SHOWCASE */}
+                            <div className="albums-showcase">
+                                <div className="albums-showcase-header">
+                                    <h2>THE LEGACY</h2>
                                 </div>
                                 {albums.map((album, index) => (
-                                    <div key={album.abbr} className="album-item" style={{
-                                        background: '#111',
-                                        padding: '1.5rem',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '2rem',
-                                        transform: `rotate(${index % 2 === 0 ? '-1deg' : '1.5deg'})`,
-                                        boxShadow: '0 15px 30px rgba(0,0,0,0.5)',
-                                        transition: 'transform 0.3s'
-                                    }}>
-                                        <div className="album-cover" style={{
-                                            width: '80px',
-                                            height: '80px',
-                                            background: 'var(--yellow-accent)',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            fontFamily: 'var(--font-display)',
-                                            color: '#111',
-                                            fontSize: '1.5rem',
-                                            flexShrink: 0
-                                        }}>
-                                            {album.abbr}
+                                    <Link href={`/album/${album.id}`} key={album.abbr} style={{ textDecoration: 'none' }}>
+                                        <div className={`album-item rotate-${index % 2 === 0 ? 'left' : 'right'}`}>
+                                            <div className="album-cover">
+                                                <Image
+                                                    src={album.image}
+                                                    alt={album.title}
+                                                    width={80}
+                                                    height={80}
+                                                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                                                />
+                                            </div>
+                                            <div className="album-info">
+                                                <h4>{album.title}</h4>
+                                                <p>{album.year}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: '#fff', letterSpacing: '1px', lineHeight: 1.2 }}>{album.title}</h4>
-                                            <p style={{ color: 'var(--yellow-accent)', fontSize: '1rem', fontWeight: 'bold' }}>{album.year}</p>
-                                        </div>
-                                    </div>
+                                    </Link>
                                 ))}
                             </div>
 

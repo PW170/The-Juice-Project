@@ -25,11 +25,20 @@
 
 body {
     background-color: var(--bg-color);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    /* Optimized static noise for mobile performance */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     color: var(--text-color);
     font-family: var(--font-body);
     overflow-x: hidden;
     cursor: none;
+}
+
+/* Disable expensive filters on mobile for max smoothness */
+@media (max-width: 768px) {
+    body {
+        background-image: none;
+        background-color: #050505;
+    }
 }
 
 .custom-cursor {
@@ -43,6 +52,13 @@ body {
     mix-blend-mode: difference;
     transform: translate(-50%, -50%);
     transition: width 0.3s, height 0.3s;
+    will-change: transform, width, height;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .custom-cursor {
+        display: none !important;
+    }
 }
 
 body:hover .custom-cursor {
@@ -165,6 +181,8 @@ body:hover .custom-cursor {
     position: relative;
     transform-style: preserve-3d;
     transform: translateZ(-1000px) rotateX(75deg) translateY(400px);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 /* ===== FLOATING ROOF TITLE ===== */
@@ -254,6 +272,7 @@ body:hover .custom-cursor {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .roof {
@@ -304,6 +323,7 @@ body:hover .custom-cursor {
     transition: background-color 2s ease;
     border-left: 2px solid #550000;
     border-right: 2px solid #550000;
+    will-change: transform, background-color;
 }
 
 /* Horizontal floor ledges on facade */
@@ -553,21 +573,284 @@ body:hover .custom-cursor {
     opacity: 0.5;
 }
 
+/* ===== ALBUMS SHOWCASE ===== */
+.albums-showcase {
+    margin: 4rem auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    max-width: 80%;
+}
+
+.albums-showcase-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.albums-showcase-header h2 {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    color: #111;
+    letter-spacing: 2px;
+}
+
+.album-item {
+    background: #111;
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s;
+}
+
+.album-item.rotate-left {
+    transform: rotate(-1deg);
+}
+
+.album-item.rotate-right {
+    transform: rotate(1.5deg);
+}
+
+.album-item:hover {
+    transform: scale(1.02);
+}
+
+.album-cover {
+    width: 80px;
+    height: 80px;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 4px;
+    position: relative;
+}
+
+.album-info h4 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.album-info p {
+    color: var(--yellow-accent);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* ===== DYNAMIC ALBUM PAGES (APPLE MUSIC STYLE) ===== */
+.album-page {
+    min-height: 100vh;
+    background-color: #0c0c0c;
+    /* Deep rich dark background */
+    padding: 6rem 8%;
+    color: #fff;
+    cursor: none;
+    /* Uses CustomCursor */
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Massive Frosted Glass Background Halo */
+.album-page::before {
+    content: '';
+    position: fixed;
+    top: -20vh;
+    left: -20vw;
+    width: 140vw;
+    height: 140vh;
+    background: radial-gradient(circle at 30% 30%, rgba(204, 0, 0, 0.15) 0%, rgba(30, 30, 30, 0.4) 40%, #0c0c0c 80%);
+    backdrop-filter: blur(100px);
+    -webkit-backdrop-filter: blur(100px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.back-button {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--yellow-accent);
+    text-decoration: none;
+    letter-spacing: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    transition: transform 0.3s, color 0.3s;
+    position: relative;
+    z-index: 10;
+}
+
+.back-button:hover {
+    color: #fff;
+    transform: translateX(-5px);
+}
+
+/* --- DUAL COLUMN LAYOUT --- */
+.album-content-wrapper {
+    display: flex;
+    gap: 8rem;
+    /* Large gap separating artwork and tracks */
+    position: relative;
+    z-index: 10;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* --- LEFT PANEL (FIXED ALBUM + CONTROLS) --- */
+.album-left-panel {
+    width: 450px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 6rem;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.album-hero-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 255, 255, 0.05);
+}
+
+/* Playback Controls (Apple Music Style) */
+.playback-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0 1rem;
+}
+
+.playback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.playback-header h3 {
+    font-family: var(--font-body);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.3rem 0;
+}
+
+.playback-header p {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.more-btn {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.more-btn:hover {
+    color: #fff;
+}
+
+/* --- RIGHT PANEL (TRACKLIST) --- */
+.album-right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1rem;
+    padding-bottom: 20vh;
+    /* Scroll allowance */
+}
+
+.tracklist-am {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: flex-start;
+    /* Forces children to respect fit-content */
+}
+
+.track-item-am {
+    font-family: var(--font-body);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    width: fit-content;
+    /* Ensure the hover area is exactly the size of the text */
+    /* Fallback for browsers without custom cursor */
+}
+
+.track-item-am:hover {
+    transform: translateX(10px);
+}
+
+.track-name-am {
+    font-size: 2.2rem;
+    /* Huge thick typography */
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: -0.5px;
+    transition: color 0.4s ease, text-shadow 0.4s ease;
+    line-height: 1.2;
+}
+
+.track-item-am:hover .track-name-am {
+    color: rgba(255, 255, 255, 1);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
 @media (max-width: 1024px) {
     .floating-overlay h1 {
         font-size: 6rem;
         padding: 2rem 3rem;
     }
+
+    /* Apple Music Mobile Collapse */
+    .album-content-wrapper {
+        flex-direction: column;
+        gap: 4rem;
+    }
+
+    .album-left-panel {
+        width: 100%;
+        position: relative;
+        top: 0;
+        max-width: 450px;
+        margin: 0 auto;
+    }
+
+    .album-right-panel {
+        padding-top: 0;
+    }
+
+    .track-name-am {
+        font-size: 1.6rem;
+    }
 }
 
 @media (max-width: 768px) {
     :root {
-        --building-width: 80vw;
+        --building-width: 85vw;
+        --building-height: 10000px;
     }
 
     .floating-overlay h1 {
-        font-size: 4.5rem;
-        padding: 2rem;
+        font-size: 4rem;
+        padding: 1.5rem;
     }
 
     .viewport-3d {
@@ -575,7 +858,55 @@ body:hover .custom-cursor {
     }
 
     .facade-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20rem 0.8rem;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding-bottom: 20rem;
+    }
+
+    .span-2,
+    .span-3 {
+        grid-column: span 1;
+        aspect-ratio: auto;
+    }
+
+    .window {
+        aspect-ratio: auto;
+        min-height: 250px;
+    }
+
+    .window-title {
+        font-size: 3rem !important;
+    }
+
+    .albums-showcase {
+        max-width: 95% !important;
+        padding: 0 0.5rem !important;
+    }
+
+    .album-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem !important;
+        padding: 1rem !important;
+    }
+
+    .album-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .album-hero-cover {
+        width: 250px;
+        height: 250px;
+    }
+
+    .album-header-text h1 {
+        font-size: 4rem;
+    }
+
+    .album-page {
+        padding: 4rem 5%;
     }
 }
